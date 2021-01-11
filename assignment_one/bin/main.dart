@@ -13,7 +13,7 @@ void main() {
   var username = stdin.readLineSync();
   stdout.write("Password: ");
   var password = stdin.readLineSync();
-  stdout.write("Please Wait\t");
+  stdout.write("Please wait\t");
   for(var i = 0; i < 1; ++ i) {
     sleep(const Duration(seconds: 1));
     stdout.write(".");
