@@ -26,21 +26,7 @@ class branch_elective extends elective {
     course_year =val_3;
   }
 }
-/*
-void main() {
-  List list_open_electives = [];
-  List list_branch_electives = [];
-  list_open_electives.add(new open_elective('Business Management', 'BM101'));
-  list_branch_electives.add(new branch_elective('AI', 'AI110', 'CSE', '3'));
-  if(list_open_electives.isEmpty) {
-    print("Is");
-  }
-  else {
-    print("Not");
-  }
-  list_open_electives[0].view();
-}
-*/
+
 int main() {
   var choice;
   List list_open_electives = [];
