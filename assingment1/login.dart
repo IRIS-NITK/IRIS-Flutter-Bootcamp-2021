@@ -11,20 +11,31 @@ class Users {
 
   void login() {
     print('Login');
+
     stdout.write('Username: ');
     String name = stdin.readLineSync();
-    stdout.write('Password: ');
 
+    stdout.write('Password: ');
     String password = stdin.readLineSync();
+
     print("\x1B[2J\x1B[0;0H");
     print('Signing In...');
+
     sleep(new Duration(seconds: 2));
     print("\x1B[2J\x1B[0;0H");
+
     users.forEach((element) {
       if (element['name'] == name && element['password'] == password) {
         print('$name Login Sucessful!! ');
+        exit(0);
+      }
+      if (element['name'] == name && element['password'] != password) {
+        print('Wrong Password!!');
+        exit(0);
       }
     });
+
+    print('No such user exists!');
   }
 }
 
