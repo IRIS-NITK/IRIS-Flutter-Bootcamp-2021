@@ -38,7 +38,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String equation = '0';
+  bool isequalto = false;
   String calculation = '';
   String result = '';
   var _myController = TextEditingController(text: '');
@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _myController.text = result;
       result = '';
+      isequalto = true;
     });
   }
 
@@ -77,6 +78,12 @@ class _MyHomePageState extends State<MyHomePage> {
           clearOne();
         }
       } catch (e) {}
+
+      if (isequalto) {
+        _myController.text = '';
+        isequalto = false;
+      }
+
       _myController.text += buttonText;
 
       try {
@@ -88,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ContextModel cm = ContextModel();
         result = exp
             .evaluate(EvaluationType.REAL, cm)
-            .toString()
+            .toStringAsPrecision(4)
             .replaceAll(RegExp(r"([.]*0)(?!.*\d)"), "");
       } catch (e) {
         result = result;
