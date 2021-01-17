@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Calculator',
       theme: ThemeData.dark(),
       home: MyHomePage(title: 'Calculator'),
     );
@@ -42,6 +42,10 @@ class _MyHomePageState extends State<MyHomePage> {
   String calculation = '';
   String result = '';
   var _myController = TextEditingController(text: '');
+  var op = ['+', '-', '%', '×', '÷'];
+
+  var results = new Map();
+  var history = [];
 
   void clearAll(buttonText) {
     setState(() {
@@ -52,6 +56,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void equalsTo(buttonText) {
     setState(() {
+      results['eqn'] = _myController.text;
+      results['ans'] = result;
+
+      history.add(new Map.of(results));
       _myController.text = result;
       result = '';
       isequalto = true;
@@ -73,18 +81,21 @@ class _MyHomePageState extends State<MyHomePage> {
       try {
         var last = _myController.text.substring(_myController.text.length - 1);
 
-        if (['+', '-', '%', '×', '÷'].contains(last) &&
-            ['+', '-', '%', '×', '÷'].contains(buttonText)) {
+        if (op.contains(last) && op.contains(buttonText)) {
           clearOne();
         }
       } catch (e) {}
 
-      if (isequalto) {
+      if (isequalto && !op.contains(buttonText)) {
         _myController.text = '';
-        isequalto = false;
+      }
+
+      if (op.contains(buttonText) && _myController.text == '') {
+        return;
       }
 
       _myController.text += buttonText;
+      isequalto = false;
 
       try {
         calculation = _myController.text;
@@ -148,31 +159,55 @@ class _MyHomePageState extends State<MyHomePage> {
         body: SafeArea(
       child: Column(
         children: [
-          Container(
-            alignment: Alignment.centerRight,
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 10),
-            child: EditableText(
-                cursorColor: Colors.blueAccent,
-                focusNode: FocusNode(),
-                showCursor: true,
-                readOnly: true,
-                autofocus: true,
-                textAlign: TextAlign.end,
-                controller: _myController,
-                backgroundCursorColor: Colors.blueAccent,
-                style: GoogleFonts.sen(
-                  fontSize: 80,
-                  fontWeight: FontWeight.w300,
-                )),
-          ),
-          Container(
-            alignment: Alignment.centerRight,
-            padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-            child: Text(result,
-                style: GoogleFonts.sen(
-                    fontSize: 60,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.grey)),
+          Material(
+              child: InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => History(
+                            history: history,
+                          )));
+            },
+            child: Container(
+              color: Colors.black26,
+              padding: EdgeInsets.all(10.0),
+              alignment: Alignment.bottomCenter,
+              child: Text(
+                'Tap to see History ->',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          )),
+          Column(
+            children: [
+              Container(
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(10, 20, 10, 10),
+                child: EditableText(
+                    cursorColor: Colors.blueAccent,
+                    focusNode: FocusNode(),
+                    showCursor: true,
+                    readOnly: true,
+                    autofocus: true,
+                    textAlign: TextAlign.end,
+                    controller: _myController,
+                    backgroundCursorColor: Colors.blueAccent,
+                    style: GoogleFonts.sen(
+                      fontSize: 80,
+                      fontWeight: FontWeight.w300,
+                    )),
+              ),
+              Container(
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
+                child: Text(result,
+                    style: GoogleFonts.sen(
+                        fontSize: 60,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.grey)),
+              ),
+            ],
           ),
           Expanded(
               child: Row(
@@ -181,82 +216,90 @@ class _MyHomePageState extends State<MyHomePage> {
                   alignment: Alignment.bottomLeft,
                   padding: EdgeInsets.all(0),
                   width: MediaQuery.of(context).size.width * 0.7,
-                  child: Table(
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    border: TableBorder(
-                        right: BorderSide(width: 0.5, color: Colors.grey),
-                        top: BorderSide(width: 0.5, color: Colors.grey)),
-                    children: [
-                      TableRow(
-                        children: [
-                          buildButton('7', Colors.white, addTo),
-                          buildButton('8', Colors.white, addTo),
-                          buildButton('9', Colors.white, addTo)
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          buildButton('4', Colors.white, addTo),
-                          buildButton('5', Colors.white, addTo),
-                          buildButton('6', Colors.white, addTo)
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          buildButton('1', Colors.white, addTo),
-                          buildButton('2', Colors.white, addTo),
-                          buildButton('3', Colors.white, addTo)
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          buildButton('0', Colors.white, addTo),
-                          buildButton('.', Colors.white, addTo),
-                          buildButton('', Colors.white, addTo)
-                        ],
-                      )
-                    ],
+                  child: Container(
+                    color: Colors.black26,
+                    child: Table(
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
+                      border: TableBorder(
+                          right: BorderSide(width: 0.5, color: Colors.blueGrey),
+                          top: BorderSide(width: 0.5, color: Colors.blueGrey)),
+                      children: [
+                        TableRow(
+                          children: [
+                            buildButton('7', Colors.white, addTo),
+                            buildButton('8', Colors.white, addTo),
+                            buildButton('9', Colors.white, addTo)
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            buildButton('4', Colors.white, addTo),
+                            buildButton('5', Colors.white, addTo),
+                            buildButton('6', Colors.white, addTo)
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            buildButton('1', Colors.white, addTo),
+                            buildButton('2', Colors.white, addTo),
+                            buildButton('3', Colors.white, addTo)
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            buildButton('0', Colors.white, addTo),
+                            buildButton('.', Colors.white, addTo),
+                            buildButton('', Colors.white, addTo)
+                          ],
+                        )
+                      ],
+                    ),
                   )),
               Container(
                   alignment: Alignment.bottomCenter,
                   padding: EdgeInsets.all(0),
                   width: MediaQuery.of(context).size.width * 0.3,
-                  child: Table(
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    border: TableBorder(
-                        top: BorderSide(width: 0.5, color: Colors.grey)),
-                    children: [
-                      TableRow(
-                        children: [
-                          buildButton('÷', Colors.blueAccent, addTo),
-                          buildButton('AC', Colors.blueAccent, clearAll,
-                              size: 25),
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          buildButton('×', Colors.blueAccent, addTo),
-                          buildiButton(Colors.blueAccent, clearOne)
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          buildButton('-', Colors.blueAccent, addTo),
-                          buildButton(
-                            '%',
-                            Colors.blueAccent,
-                            addTo,
-                            size: 30,
-                          )
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          buildButton('+', Colors.blueAccent, addTo),
-                          buildButton('=', Colors.blueAccent, equalsTo),
-                        ],
-                      )
-                    ],
+                  child: Container(
+                    color: Colors.black26,
+                    child: Table(
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
+                      border: TableBorder(
+                          top: BorderSide(width: 0.5, color: Colors.blueGrey)),
+                      children: [
+                        TableRow(
+                          children: [
+                            buildButton('÷', Colors.blueAccent, addTo),
+                            buildButton('AC', Colors.blueAccent, clearAll,
+                                size: 25),
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            buildButton('×', Colors.blueAccent, addTo),
+                            buildiButton(Colors.blueAccent, clearOne)
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            buildButton('-', Colors.blueAccent, addTo),
+                            buildButton(
+                              '%',
+                              Colors.blueAccent,
+                              addTo,
+                              size: 30,
+                            )
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            buildButton('+', Colors.blueAccent, addTo),
+                            buildButton('=', Colors.blueAccent, equalsTo),
+                          ],
+                        )
+                      ],
+                    ),
                   ))
             ],
           )),
@@ -266,5 +309,52 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // This trailing comma makes auto-formatting nicer for build methods.
         );
+  }
+}
+
+class History extends StatelessWidget {
+  final List history;
+  History({this.history});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black12,
+        title: Text('History'),
+      ),
+      body: SingleChildScrollView(
+        reverse: true,
+        child: Container(
+          color: Colors.black38,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i in history)
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        i['eqn'],
+                        textAlign: TextAlign.end,
+                        style: TextStyle(color: Colors.white, fontSize: 50),
+                      ),
+                      Text(
+                        i['ans'],
+                        textAlign: TextAlign.end,
+                        style: TextStyle(color: Colors.grey, fontSize: 40),
+                      )
+                    ],
+                  ),
+                )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
