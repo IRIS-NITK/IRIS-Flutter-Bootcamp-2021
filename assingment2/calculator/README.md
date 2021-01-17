@@ -10,4 +10,5 @@ You cannot add more than one operator at a time.
 
 ## Demo
 
-![Calculator App Demo](calculatorDemo.gif)
+<p align='center'><img src="calculatorDemo.gif" width="250"></p>
+
